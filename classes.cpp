@@ -1,121 +1,49 @@
-class Entity {
-    private:       
-        int health;    //10
-        int strength;  //1 - 3
-        int defense;   //1 - 2
-        int healing;   // 0 - 2
-    protected:
-        int pos;   // 0 - x*y
-    public:
-        int get_health() {
-            return health;
-        }
+#include "classes.h"
 
-        int get_strength() {
-            return strength;
-        }
+Entity :: Entity(int test_pos){pos = test_pos;}
 
-        int get_defense() {
-            return defense;
-        }
+int Entity :: get_pos() {return pos;}
 
-        int get_pos() {
-            return pos;
-        }
+void Entity :: set_pos(int x) {pos = x;}
 
-        void set_health(int x) {
-            health = x;
-        }
 
-        void set_strength(int x) {
-            strength = x;
-        }
+int Vampire :: get_health() {return health;}
 
-        void set_defense(int x) {
-            defense = x;
-        }
-};
+int Vampire :: get_defense() {return defense;}
 
-class Vampire: public Entity {
-    private:
-        
-    protected:
-        //edo erxontai ta protected apo hyperclass
-    public:
-        //edo erxontai ta public apo hyperclass
-        Vampire(int s,int d,int p) {
-            set_health(10);
-            set_strength(s);
-            set_defense(d);
-            pos = p;
-        }
-};
+int Vampire :: get_strength() {return strength;}
 
-class Werewolf: public Entity {
-    private:
-        
-    protected:
-        //edo erxontai ta protected apo hyperclass
-    public:
-        //edo erxontai ta public apo hyperclass
-        Werewolf(int s,int d,int p) {
-            set_health(10);
-            set_strength(s);
-            set_defense(d);
-            pos = p;
-        }
-};
+int Vampire :: get_healing() {return healing;}
 
-class Avatar: public Entity {
-    private:
+void Vampire :: set_health(int health) {this->health = health;}
 
-    public:
-        Avatar(int p) {
-            pos = p;
-        }
-};
+void Vampire :: set_healing(int healing) {this->healing = healing;}
 
 
 
 
+int Werewolf :: get_health() {return health;}
 
-class Obstacles {
-    protected:
-        int pos;
-    public:
-        int get_pos() {
-            return pos;
-        }
-};
+int Werewolf :: get_defense() {return defense;}
 
-class Trees: public Obstacles {
-    public:
-        Trees(int p) {
-            pos = p;
-        }
+int Werewolf :: get_strength() {return strength;}
 
-};
+int Werewolf :: get_healing() {return healing;}
 
-class Lakes: public Obstacles {
-    public:
-        Lakes(int p) {
-            pos = p;
-        }
-};
+void Werewolf :: set_health(int health) {this->health = health;}
+
+void Werewolf :: set_healing(int healing) {this->healing = healing;}
+
+int Avatar :: get_pot() {return avatar_potions;}
+
+void Avatar :: set_pot(int potions){avatar_potions=potions;}
 
 
-class Potion: public Obstacles {
-    public:
-        Potion(int p) {
-            pos = p;
-        }
-};
+Obstacle :: Obstacle(int test_pos){pos = test_pos;}
 
+int Obstacle :: get_pos() {return pos;}
 
-void attack() {
-
-}
-
-void heal_ally() {
-    
+void Avatar :: pickUp(Potion* p) {
+    p->pos = -10;
+    avatar_potions++;
 }

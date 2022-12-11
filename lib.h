@@ -6,5 +6,7 @@
 #include <cmath>
 #include <windows.h>
 #include <thread>
+#include <vector>
 
 using namespace std;
+

@@ -1,11 +1,14 @@
 #include "lib.h"
-#include "functions.cpp"
-#include <iostream>
+#include "functions.h"
+#include "classes.h"
 
-extern unsigned int x,y;
-extern char player_support;
+extern int x,y;
 
 int main() {
+    srand(time(NULL));
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, 7);
+
     system("cls");
 
     printTitleScreen();
@@ -14,14 +17,59 @@ int main() {
 
     printInstructions();
     
-    request_side();
+    char player_support = request_side();
 
-    //system("cls");
+    system("cls");
 
-    
+    Avatar a1(x+(x/2));
+
+    Potion p1 = setPotionPosition(a1);
+
+    vector<Tree*> Trees;
+    vector<Lake*> Lakes;
+    vector<Vampire*> Vampires;
+    vector<Werewolf*> Werewolves;
+
+    int obstacles_population = (x*y)/140;
+    if (obstacles_population < 1) obstacles_population = 1;
+    int sizeV = (x+y)/5; 
+    int sizeW = (x+y)/5;
+
+    fillTrees(obstacles_population,Trees,a1,p1);
+    fillLakes(obstacles_population,Trees,Lakes,a1,p1);
+    fillVampires(obstacles_population,sizeV,Trees,Lakes,Vampires,a1,p1);
+    fillWerewolves(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1,p1);
+
+    BubbleSortObstacles(obstacles_population,Trees,Lakes);
+    BubbleSortEntities(sizeV,sizeW,Vampires,Werewolves);
+
+    bool isDay = true;
+
+    while (!GetKeyState(VK_SPACE) && sizeV > 0 && sizeW > 0) {
+        AvatarMovement(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1);
+
+        if (a1.get_pos() == p1.get_pos()) a1.pickUp(&p1);
+
+        (isDay) ? cout << "Day Time" : cout << "Night Time";
+
+        PrintTeamLife(Vampires,Werewolves,sizeV,sizeW);
+
+        PrintMap(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1,p1);
+
+        this_thread::sleep_for(450ms);
+        system("cls");
+
+        moveWerewolves(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1,p1);
+        moveVampires(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1,p1);
+
+        //Sort array after movement
+        BubbleSortEntities(sizeV,sizeW,Vampires,Werewolves);
 
 
-    
+
+
+        pause_function();
+    }
 
     return 0;
 }
