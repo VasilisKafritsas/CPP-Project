@@ -44,32 +44,49 @@ int main() {
     BubbleSortEntities(sizeV,sizeW,Vampires,Werewolves);
 
     bool isDay = true;
+    int DayNightCounter = 0;
+
+    int starting_health = getStartingHealth(Vampires,sizeV);
+
+    int tempPos;
+    bool collision;
 
     while (!GetKeyState(VK_SPACE) && sizeV > 0 && sizeW > 0) {
-        AvatarMovement(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1);
+        a1.set_pos(AvatarMovement(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1));
 
         if (a1.get_pos() == p1.get_pos()) a1.pickUp(&p1);
 
         (isDay) ? cout << "Day Time" : cout << "Night Time";
 
-        PrintTeamLife(Vampires,Werewolves,sizeV,sizeW);
+        PrintTeamHealth(Vampires,Werewolves,sizeV,sizeW,starting_health);
 
         PrintMap(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1,p1);
 
         this_thread::sleep_for(450ms);
         system("cls");
 
+
         moveWerewolves(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1,p1);
         moveVampires(obstacles_population,sizeV,sizeW,Trees,Lakes,Vampires,Werewolves,a1,p1);
 
-        //Sort array after movement
         BubbleSortEntities(sizeV,sizeW,Vampires,Werewolves);
 
+        vamps_attack(sizeV, sizeW, Vampires, Werewolves);
+        // vamps_heal(sizeV, Vampires);
+        weres_attack(sizeV, sizeW, Vampires, Werewolves);
+        // weres_heal(sizeW,Werewolves);
+        sizeV = check_healthV(sizeV, Vampires);
+        sizeW = check_healthW(sizeW, Werewolves);
+        
+        // heal(a1, player_support, isDay, sizeV, sizeW,Vampires,Werewolves);
 
+        pause_function(sizeV, sizeW, a1);
 
-
-        pause_function();
+        DayNightCounter++;
+        isDay = ChangeDay(DayNightCounter, isDay);
     }
+
+    EndScreen(sizeW);
 
     return 0;
 }

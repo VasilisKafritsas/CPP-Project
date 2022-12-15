@@ -99,30 +99,6 @@ char request_side() {
     return player_support;
 }
 
-
-
-
-void printResultMenu() {
-    for (int i = 0 ; i < 60 ; i++) cout << '\3';        //Start of title screen
-
-    cout << endl << '\3';
-    for (int i = 0 ; i < 58 ; i++) cout << ' '; 
-    cout << '\3' << endl;
-
-    cout << '\3';
-    for (int i = 0 ; i < 22 ; i++) cout << ' ';  
-    cout << "Werewolfs win!";
-    for (int i = 0 ; i < 22 ; i++) cout << ' ';
-    cout << '\3' << endl;
-
-    cout << '\3';
-    for (int i = 0 ; i < 58 ; i++) cout << ' '; 
-    cout << '\3' << endl;
-
-    for (int i = 0 ; i < 60 ; i++) cout << '\3'; 
-    cout << "\n\n";                                  //End of title screen
-}
-
  Potion setPotionPosition(Avatar a) {
     int potion_pos = (rand() % (x*y) + 1);
     if (potion_pos == a.get_pos()) {
@@ -241,7 +217,7 @@ void BubbleSortEntities(int vampires_size, int werewolves_size, vector<Vampire*>
     }
 }
 
-void AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a) {
+int AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a) {
     int tempPos;
     bool collision = false;
     if (GetAsyncKeyState('W') || GetAsyncKeyState(VK_UP)) {    //WWW
@@ -255,7 +231,7 @@ void AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, 
              }
             for (int t = 0 ; t < obstacles_size ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
 
-            if (tempPos > 0 && !collision) a.set_pos(tempPos);
+            if (tempPos > 0 && !collision) return tempPos;
     } 
     else if (GetAsyncKeyState('S') || GetAsyncKeyState(VK_DOWN)) {   //SSS
             tempPos = a.get_pos() + x;
@@ -268,7 +244,7 @@ void AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, 
              }
             for (int t = 0 ; t < obstacles_size ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
 
-            if (tempPos <= x*y && !collision) a.set_pos(tempPos);
+            if (tempPos <= x*y && !collision) return tempPos;
     } 
     else if (GetAsyncKeyState('A') || GetAsyncKeyState(VK_LEFT)) {   //AAA
             tempPos = a.get_pos() - 1;
@@ -283,7 +259,7 @@ void AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, 
 
             for (int i = 1 ; i <= y ; i++) if (tempPos == x*i) collision = true;
 
-            if (tempPos > 0 && !collision) a.set_pos(tempPos);
+            if (tempPos > 0 && !collision) return tempPos;
     }
     else if (GetAsyncKeyState('D') || GetAsyncKeyState(VK_RIGHT)) {  ///DDD
             tempPos = a.get_pos() + 1;
@@ -298,21 +274,32 @@ void AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, 
 
             for (int i = 1 ; i <= y ; i++) if (tempPos == x*i+1) collision = true;  
 
-            if (tempPos <= x*y && !collision) a.set_pos(tempPos);
+            if (tempPos <= x*y && !collision) return tempPos;
     } 
+    return a.get_pos();
 }
 
-void PrintTeamLife(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, int vampires_size, int werewolves_size) {
-    int werewolves_life = 0, vampires_life = 0;
+int getStartingHealth(vector<Vampire*>& Vampires, int vampires_size) {
+    int starting_health = 0;
+
+    for (int i = 0 ; i < vampires_size ; i++) {
+        starting_health += Vampires[i]->get_health();
+    }
+
+    return starting_health;
+}
+
+void PrintTeamHealth(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, int vampires_size, int werewolves_size, int starting_health) {
+    int werewolves_health = 0, vampires_health = 0;
 
     for (int i = 0 ; i < werewolves_size ; i++) {
-        werewolves_life += Werewolves[i]->get_health();
+        werewolves_health += Werewolves[i]->get_health();
     }
     for (int i = 0 ; i < vampires_size ; i++) {
-        vampires_life += Vampires[i]->get_health();
+        vampires_health += Vampires[i]->get_health();
     }
 
-    cout << "    W: " << werewolves_life << "    V: " << vampires_life << endl;
+    cout << "    W: " << werewolves_health << '/' << starting_health << "    V: " << vampires_health << '/' << starting_health << endl;
 
 }
 
@@ -587,21 +574,148 @@ void moveVampires(int obstacles_size, int vampires_size, int werewolves_size, ve
         }
 }
 
-
-
-
-
-
-void printPauseMenu() {
-    cout << "[Alive Vampires  : " << "##" << ']' << endl;
-    cout << "[Alive Werewolfs : " << "##" << ']' << endl;
-    cout << "[Avatar s  : " << "1 ]" << endl;
+void vamps_attack(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves ){
+     for (int i = 0 ; i < vampires_size ; i++){  //Vampires Attack
+        int battle_pos = Vampires[i]->get_pos();
+        for (int j = 0 ; j < werewolves_size ; j++){
+            if(battle_pos == Werewolves[j]->get_pos()-x || battle_pos == Werewolves[j]->get_pos()+x || battle_pos == Werewolves[j]->get_pos()-1 || battle_pos == Werewolves[j]->get_pos()+1){
+                if(Vampires[i]->get_strength() >= Werewolves[j]->get_strength() && Vampires[i]->get_strength() >= Werewolves[j]->get_defense()){
+                    Vampires[i]->attackW(Werewolves[j]);
+                }
+                // Werewolf* w=Werewolves[j];
+                // if (w->get_health() <= 0) {
+                //     delete w;
+                //     w=NULL;
+                //     werewolves_size--;
+                // }
+            }
+        }
+    }
 }
 
-void pause_function() {
+void vamps_heal(int vampires_size, vector<Vampire*>& Vampires) {
+   for (int i = 0 ; i < vampires_size ; i++){   //Vampires Heal
+        int assist_pos = Vampires[i]->get_pos();
+        bool choice;
+        for (int j = 0 ; j < vampires_size ; j++){
+            choice = (rand() % 2);
+            if(assist_pos == Vampires[j]->get_pos()-x || assist_pos == Vampires[j]->get_pos()+x || assist_pos == Vampires[j]->get_pos()-1 || assist_pos == Vampires[j]->get_pos()+1){
+                if(Vampires[i]->get_health() > Vampires[j]->get_health() && Vampires[i]->get_healing()>0 && choice){
+                    Vampires[j]->set_health((Vampires[j]->get_health())+1);
+                    Vampires[i]->set_healing((Vampires[i]->get_healing())-1);
+                }
+            }
+        }
+    } 
+}
+
+void weres_attack(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves ){
+     for (int i = 0 ; i < werewolves_size ; i++){  //Vampires Attack
+        int battle_pos = Werewolves[i]->get_pos();
+        for (int j = 0 ; j < vampires_size ; j++){
+            if(battle_pos == Vampires[j]->get_pos()-x || battle_pos == Vampires[j]->get_pos()+x || battle_pos == Vampires[j]->get_pos()-1 || battle_pos == Vampires[j]->get_pos()+1){
+                if(Werewolves[i]->get_strength() >= Vampires[j]->get_strength() && Werewolves[i]->get_strength() >= Vampires[j]->get_defense()){
+                    Werewolves[i]->attackV(Vampires[j]);
+                }
+                // Vampire* v = Vampires[j];
+                // if (v->get_health()<=0) {
+                //     delete v;
+                //     v=NULL;
+                //     vampires_size--;
+                // }
+            }
+        }
+    }
+}
+
+void weres_heal(int werewolves_size, vector<Werewolf*>& Werewolves) {
+    for (int i = 0 ; i < werewolves_size ; i++){   
+        int assist_pos = Werewolves[i]->get_pos();
+        bool choice;
+        for (int j = 0 ; j < werewolves_size ; j++){
+            choice = (rand() % 2);
+            if(assist_pos == Werewolves[j]->get_pos()-x || assist_pos == Werewolves[j]->get_pos()+x || assist_pos == Werewolves[j]->get_pos()-1 || assist_pos == Werewolves[j]->get_pos()+1){
+                if(Werewolves[i]->get_health() > Werewolves[j]->get_health() && Werewolves[i]->get_healing()>0 && choice){
+                    Werewolves[j]->set_health((Werewolves[j]->get_health())+1);
+                    Werewolves[i]->set_healing((Werewolves[i]->get_healing())-1);
+                }
+            }
+        }
+    } 
+}
+
+int check_healthV(int vampires_size, vector<Vampire*>& Vampires) {
+    for (int i = 0 ; i < vampires_size ; i++) {
+        Vampire* v= Vampires[i];
+        if (v->get_health()<=0) {
+            delete v;
+            v=NULL;
+            vampires_size--;
+        }
+    }
+    return vampires_size;
+}
+
+int check_healthW(int werewolves_size, vector<Werewolf*>& Werewolves){
+    for (int i = 0 ; i < werewolves_size ; i++) {
+        Werewolf* w=Werewolves[i];
+        if (w->get_health() <= 0) {
+            delete w;
+            w=NULL;
+            werewolves_size--;
+        }
+    }
+    return werewolves_size;
+}
+
+void heal(Avatar a, char p_support,bool Day, int vampires_size,int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves){
+     if(GetAsyncKeyState('H')){
+        if(a.get_pot()>0){
+            a.heal();
+            if(p_support == 'V' && Day){
+                for(int i = 0; i < vampires_size ; i++) Vampires[i]->heal();
+            }
+            else if(p_support == 'W' && !Day){
+                for(int i = 0; i < werewolves_size ; i++) Werewolves[i]->heal();
+            }
+        }
+
+    }
+}
+
+void pause_function(int vampires_size, int werewolves_size, Avatar a) {
     if (GetKeyState('P')) {                     
         system("cls");
-        printPauseMenu();   // (Show alive Vampires, alive Werewolfs and amount of s the player has)
+        cout << "[Alive Vampires  : " <<  vampires_size << ']' << endl;
+        cout << "[Alive Werewolfs : " << werewolves_size << ']' << endl;
+        cout << "[Avatar potions  : " << a.get_pot() << endl;
         system("pause");
     }
+}
+
+bool ChangeDay(int counter, bool Day) {
+    if (counter % 10 == 0) Day = !Day;
+
+    return Day;
+}
+
+void EndScreen(int werewolves_size) {
+    for (int i = 0 ; i < 60 ; i++) cout << '\4';        //End screen
+
+    cout << endl << '\4';
+    for (int i = 0 ; i < 58 ; i++) cout << ' '; 
+    cout << '\4' << endl;
+
+    cout << '\4';
+    for (int i = 0 ; i < 22 ; i++) cout << ' ';  
+    if(werewolves_size > 0)cout << "Werewolves win!";
+    else cout<<"Vampires win!";
+    if(werewolves_size > 0) for (int i = 0 ; i < 21 ; i++) cout << ' ';
+    else for (int i = 0 ; i < 23 ; i++) cout << ' ';
+    cout << '\4' << endl;
+    cout << '\4';
+    for (int i = 0 ; i < 58 ; i++) cout << ' '; 
+    cout << '\4' << endl;
+    for (int i = 0 ; i < 60 ; i++) cout << '\4'; 
+    cout << "\n\n"; 
 }

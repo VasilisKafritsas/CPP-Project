@@ -1,6 +1,9 @@
 #pragma once
 #include "lib.h"
 
+class Werewolf;
+class Vampire;
+
 class Entity {
     private:
         int health = 5;
@@ -14,6 +17,7 @@ class Entity {
 
         int get_pos();
         void set_pos(int x);
+        virtual void heal();
 
 	    ~Entity() {}
         
@@ -32,6 +36,8 @@ class Vampire: public Entity{//child no1
         int get_healing();
         void set_health(int health);
         void set_healing(int healing);
+        void attackW(Werewolf*);
+        void heal();
 
         ~Vampire() {}
 };
@@ -47,6 +53,9 @@ class Werewolf: public Entity{//child n02 same
         int get_healing();
         void set_health(int health);
         void set_healing(int healing);
+        void attackV(Vampire*);
+        void heal();
+
         ~Werewolf() {}
 };
 
@@ -60,6 +69,7 @@ class Avatar: public Entity{//child no3
         int get_pot();
         void set_pot(int potions);
         void pickUp(Potion*);
+        void heal();
         ~Avatar(){};
 };
 
