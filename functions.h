@@ -1,65 +1,60 @@
+/* Ηeader αρχείο για της συναρτήσεις */
+
 #pragma once
 #include "classes.h"
 
-void printTitleScreen();
+//Ορίσματα προτύπων συναρτήσεων
+void printTitleScreen(); //Εκτύπωση Τίτλου Παιχνιδιού
 
-void request_dimensions();
+void request_dimensions(); //Εισαγωγή διαστάσεων
 
-void printInstructions();
+void printInstructions(); //Εκτύπωση οδηγιών με πάυσεις
 
-char request_side();
+char request_side(); //Επιλογή ομάδας παίκτη 
 
-void printPauseMenu();
+Potion setPotionPosition(Avatar a); //Eύρεση κατάλληλης θέσης για το μαγικό φίλτρο στο χάρτη
 
-void pause_function();
+void fillTrees(int size,vector<Tree*>& Trees, Avatar a, Potion potion); //Γέμισμα του vector των Trees με αντικείμενα Tree
 
-void printResultMenu();
+void fillLakes(int size,vector<Tree*>& Trees, vector<Lake*>& Lakes,Avatar a, Potion potion); //Γέμισμα του vector των Lakes με αντικείμενα Lake
 
-Potion setPotionPosition(Avatar a);
+void fillVampires(int size,vector<Tree*>& Trees, vector<Lake*>& Lakes,
+vector<Vampire*>& Vampires,Avatar a, Potion potion); //Γέμισμα του vector των Vampires με αντικείμενα Vampire
 
-void fillTrees(int size, vector<Tree*>& Trees, Avatar a, Potion potion);
+void fillWerewolves(int size,vector<Tree*>& Trees, vector<Lake*>& Lakes,
+vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion); //Γέμισμα του vector των Werewolves με αντικείμενα Vampire
 
-void fillLakes(int size, vector<Tree*>& Trees, vector<Lake*>& Lakes,Avatar a, Potion potion);
+void BubbleSortObstacles(vector<Tree*>& Trees, vector<Lake*>& Lakes); //Ταξινόμηση BubbleSort των εμποδίων σε άυξουσα σειρά
 
-void fillVampires(int obstacles_size, int vampires_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,
-vector<Vampire*>& Vampires,Avatar a, Potion potion);
+void BubbleSortEntities(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves); //Ταξινόμηση BubbleSort των οντοτήτων σε άυξουσα σειρά
 
-void fillWerewolves(int obstacles_size, int vampires_size, int werewolves_size,vector<Tree*>& Trees, vector<Lake*>& Lakes,
-vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion);
+int AvatarMovement( vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a); //Κίνηση του avatar από τον παίκτη
 
-void BubbleSortObstacles(int obstacles_size, vector<Tree*>& Trees, vector<Lake*>& Lakes);
+int getStartingHealth(vector<Vampire*>& Vampires); //Υπολογισμός αρχικής υγείας
 
-void BubbleSortEntities(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves);
+void PrintTeamHealth(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, int starting_health); //Εκτύπωση συνολικής υγείας κάθε ομάδας
 
-int AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a);
+void PrintMap(vector<Tree*>& Trees, vector<Lake*>& Lakes,
+vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion); //Εκτύπωση χάρτη
 
-void moveWerewolves(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion);
+void moveWerewolves( vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion); //Τυχαία κίνηση των Werewolves
 
-void moveVampires(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion);
+void moveVampires( vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion); //Τυχαία κίνηση των Vampires
 
-int getStartingHealth(vector<Vampire*>& Vampires, int vampires_size);
+int vamps_attack(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves); //Επίθεση των Vampires σε εχθρούς διπλανών θέσεων 
 
-void PrintTeamHealth(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, int vampires_size, int werewolves_size, int starting_health);
+void vamps_heal(vector<Vampire*>& Vampires); //Επούλωση υγείας μεταξύ των Vampires
 
-void PrintMap(int obstacles_size, int vampires_size, int werewolves_size,vector<Tree*>& Trees, vector<Lake*>& Lakes,
-vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion potion);
+int weres_attack(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves); //Επίθεση των Werewolves σε εχθρούς διπλανών θέσεων 
 
-void vamps_attack(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves);
+void weres_heal(vector<Werewolf*>& Werewolves); //Επούλωση υγείας μεταξύ των Werewolves
 
-void vamps_heal(int vampires_size, vector<Vampire*>& Vampires);
+int heal(Avatar a, char p_support,bool Day,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves); //Γέμισμα υγείας της υποστηριζόμενης ομάδας από τον παίχτη με το κουμπί [Η]
 
-void weres_attack(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves);
+void pause_function(Avatar a, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves); //Παύση του προγράμματος με το κουμπί [P]
 
-void weres_heal(int werewolves_size, vector<Werewolf*>& Werewolves);
+bool ChangeDay(int counter, bool day); //Αλλαγή μέρας ανάλογα τον μετρητή των frames
 
-int check_healthV(int vampires_size,vector<Vampire*>& Vampires);
+void EndScreen(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves); //Εκτύπωση αποτελέσματος του παιχνιδιού
 
-int check_healthW(int werewolves_size, vector<Werewolf*>& Werewolves);
-
-void heal(Avatar a, char p_support,bool Day, int vampires_size,int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves);
-
-bool ChangeDay(int counter, bool day);
-
-void pause_function(int vampires_size, int werewolves_size, Avatar a);
-
-void EndScreen(int werewolves_size);
+void ClearVectors(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves); //Αποδέσμευση μνήμης όλων των vectors και των αντικειμένων που περιλαμβάνουν

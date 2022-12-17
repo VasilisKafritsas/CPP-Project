@@ -1,14 +1,16 @@
+/* Ορισμός συναρτήσεων */
+
 #include "lib.h"
 #include "classes.h"
 
-unsigned int x, y;
-char player_support;
+unsigned int x, y; //Μεταβλητές για τις διαστάσεις
+char player_support; //Μεταβλητή για το ποια ομάδα υποστηρίζει ο παίχτης
 
 HANDLE hConsole;
 
-void printTitleScreen() {
+void printTitleScreen() { //Εκτύπωση Τίτλου Παιχιδιού
 	
-    for (int i = 0; i < 61; i++) cout << '\4';        //Start of title screen
+    for (int i = 0; i < 61; i++) cout << '\4';  // '\4'= ρόμβος      
 
     cout << endl << '\4';
     for (int i = 0; i < 59; i++) cout << ' ';
@@ -25,23 +27,23 @@ void printTitleScreen() {
     cout << '\4' << endl;
 
     for (int i = 0; i < 61; i++) cout << '\4';
-    cout << "\n\n";                                  //End of title screen
+    cout << "\n\n";                                  
 
 }
 
 
-void request_dimensions() {  
+void request_dimensions() {  ////Εισαγωγή διαστάσεων
     do {
-        cout << "Please give dimensions to create the grid(x > y recommended): " << endl;
+        cout << "Please give dimensions to create the grid(x,y >= 5): " << endl;
         cin >> x;
         cin >> y; 
-    } while (x < 5 || y < 5);
+    } while (x < 5 || y < 5); //Απαίτηση χ και y μεγαλύτερο του 5
 }
 
 
 
 
-void printInstructions() {
+void printInstructions() { //Εκτύπωση οδηγιών με πάυσεις
     cout << "\n*INSTRUCTIONS*\n";
     this_thread::sleep_for(500ms);
 
@@ -71,25 +73,25 @@ void printInstructions() {
     cout << "Good Luck!\n";
     this_thread::sleep_for(500ms);
 
-    system("pause");
+    system("pause"); //Αναμονή εκκίνησης παιχνιδιού από τον παίκτη
 
     system("cls");
 }
 
 
-char request_side() { 
+char request_side() { //Επιλογή ομάδας παίκτη 
     cout << endl << "Choose a side (V for Vampires or W for Werewolfs): ";
     cin >> player_support;
-    if (player_support == 'V' || player_support == 'v')  {
+    if (player_support == 'V' || player_support == 'v')  { //v ή V για Vampires
         player_support = 'V';
         cout << player_support;
     }
-    else if (player_support == 'W' || player_support == 'w') {
+    else if (player_support == 'W' || player_support == 'w') { //w ή W για Werewolves
         player_support = 'W';
         cout << player_support;
     }
     else {
-        while (player_support != 'V' && player_support != 'v' && player_support != 'W' && player_support != 'w') {
+        while (player_support != 'V' && player_support != 'v' && player_support != 'W' && player_support != 'w') { //Έλεγχος σωστού input
             cout << "Not right input! \n";
             cout << endl << "Choose a side (V for Vampires or W for Werewolfs): ";
             cin >> player_support;
@@ -99,85 +101,85 @@ char request_side() {
     return player_support;
 }
 
- Potion setPotionPosition(Avatar a) {
-    int potion_pos = (rand() % (x*y) + 1);
-    if (potion_pos == a.get_pos()) {
+ Potion setPotionPosition(Avatar a) { //Eύρεση κατάλληλης θέσης για το μαγικό φίλτρο στο χάρτη
+    int potion_pos = (rand() % (x*y) + 1); //Τυχαία θέση
+    if (potion_pos == a.get_pos()) { //Έλεγχος σύμπτωσης θέσης με τον παίκτη
         while (potion_pos == a.get_pos()) {
             potion_pos = (rand() % (x*y) + 1);
         }
     }
-    Potion p(potion_pos);
+    Potion p(potion_pos); //Κάλεσμα constructor του Potion
 
     return p;
 }
 
-void fillTrees(int size, vector<Tree*>& Trees, Avatar a, Potion p) {
+void fillTrees(int size,vector<Tree*>& Trees, Avatar a, Potion p) { //Γέμισμα του vector των Trees με αντικείμενα Tree
     int test_position;
-    for (int i = 0; i < size; i++) {            //Fill Trees vector
-        test_position = (rand() % (x*y) + 1); 
-        for (int k = 0 ; k < i ; k++) {         //Test if pos equals to previous positions
-            while (test_position == Trees[k]->get_pos() || test_position == a.get_pos() || test_position == p.get_pos()) test_position = (rand() % (x*y) + 1);
+    for (int i = 0; i < size; i++) {            
+        test_position = (rand() % (x*y) + 1); //Εύρεση τυχαίας θέσης για τα Trees στο χάρτη
+        for (int k = 0 ; k < i ; k++) {         
+            while (test_position == Trees[k]->get_pos() || test_position == a.get_pos() || test_position == p.get_pos()) test_position = (rand() % (x*y) + 1); //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις
         }      
-		Tree* t1 = new Tree(test_position);
-		Trees.push_back(t1);
+		Tree* t1 = new Tree(test_position); //Δημιουργία pointer σε αντικείμενο Tree 
+		Trees.push_back(t1); //Εισαγωγή του pointer στον vector Trees
 	}
 }
 
-void fillLakes(int size, vector<Tree*>& Trees, vector<Lake*>& Lakes,Avatar a, Potion p) {
+void fillLakes(int size,vector<Tree*>& Trees, vector<Lake*>& Lakes,Avatar a, Potion p) { //Γέμισμα του vector των Lakes με αντικείμενα Lake
     int test_position;
-    for (int i = 0; i < size; i++) {           //Fill Lakes vector
-        test_position = (rand() % (x*y) + 1);
+    for (int i = 0; i < size; i++) {           
+        test_position = (rand() % (x*y) + 1); //Εύρεση τυχαίας θέσης για τα Lakes στο χάρτη
         for (int j = 0 ; j < size ; j++) {
-            while (test_position == Trees[j]->get_pos() || test_position == p.get_pos() || test_position == a.get_pos()) test_position = (rand() % (x*y) + 1);     
+            while (test_position == Trees[j]->get_pos() || test_position == p.get_pos() || test_position == a.get_pos()) test_position = (rand() % (x*y) + 1); //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις     
         }
-        for (int k = 0 ; k < i ; k++) {         //Test if pos equals to previous positions
-            while (test_position == Lakes[k]->get_pos()) test_position = (rand() % (x*y) + 1);
+        for (int k = 0 ; k < i ; k++) {         
+            while (test_position == Lakes[k]->get_pos()) test_position = (rand() % (x*y) + 1); //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις     
         }
-        Lake* l1 = new Lake(test_position);
-		Lakes.push_back(l1);
+        Lake* l1 = new Lake(test_position); //Δημιουργία pointer σε αντικείμενο Lake
+		Lakes.push_back(l1); //Εισαγωγή του pointer στον vector Lakes
     }
 }
 
-void fillVampires(int obstacles_size, int vampires_size, vector<Tree*>& Trees, vector<Lake*>& Lakes, vector<Vampire*>& Vampires,Avatar a, Potion p){
+void fillVampires(int size,vector<Tree*>& Trees, vector<Lake*>& Lakes, vector<Vampire*>& Vampires,Avatar a, Potion p){ //Γέμισμα του vector των Vampires με αντικείμενα Vampire
     int test_position;
-    for (int i = 0; i < vampires_size; i++) {           //Fill Vampires vector
-        test_position = (rand() % (x*y) + 1);  
-        for (int j = 0 ; j < obstacles_size ; j++) { 
-            while (test_position == Trees[j]->get_pos() || test_position == Lakes[j]->get_pos() || test_position == p.get_pos() || test_position == a.get_pos()) 
+    for (int i = 0; i < size; i++) {         
+        test_position = (rand() % (x*y) + 1); //Εύρεση τυχαίας θέσης για τα Vampires στο χάρτη  
+        for (int j = 0 ; j < Trees.size() ; j++) { 
+            while (test_position == Trees[j]->get_pos() || test_position == Lakes[j]->get_pos() || test_position == p.get_pos() || test_position == a.get_pos())  //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις   
                 test_position = (rand() % (x*y) + 1);     
         }
-        for (int k = 0 ; k < i ; k++) {         //Test if pos equals to previous positions
-            while (test_position == Vampires[k]->get_pos()) test_position = (rand() % (x*y) + 1);    
+        for (int k = 0 ; k < i ; k++) {     
+            while (test_position == Vampires[k]->get_pos()) test_position = (rand() % (x*y) + 1); //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις       
         }
-        Vampire* v1 = new Vampire(test_position);
-		Vampires.push_back(v1);
+        Vampire* v1 = new Vampire(test_position); //Δημιουργία pointer σε αντικείμενο Vampire
+		Vampires.push_back(v1); //Εισαγωγή του pointer στον vector Vampires
     }
 }
 
-void fillWerewolves(int obstacles_size, int vampires_size, int werewolves_size,vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) {
+void fillWerewolves(int size,vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) { //Γέμισμα του vector των Werewolves με αντικείμενα Vampire
     int test_position;
-    for (int i = 0; i < werewolves_size; i++) {           //Fill Werewolves vector
-        test_position = (rand() % (x*y) + 1);
-        for (int j = 0 ; j < obstacles_size ; j++) {
-            while (test_position == Trees[j]->get_pos() || test_position == Lakes[j]->get_pos() || test_position == p.get_pos() || test_position == a.get_pos()) 
+    for (int i = 0; i < size; i++) {
+        test_position = (rand() % (x*y) + 1); //Εύρεση τυχαίας θέσης για τα Werewolves στο χάρτη 
+        for (int j = 0 ; j < Lakes.size() ; j++) {
+            while (test_position == Trees[j]->get_pos() || test_position == Lakes[j]->get_pos() || test_position == p.get_pos() || test_position == a.get_pos()) //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις   
                 test_position = (rand() % (x*y) + 1);
         }
-        for (int m = 0 ; m < vampires_size ; m++) {
-            while (test_position == Vampires[m]->get_pos()) test_position = (rand() % (x*y) + 1);
+        for (int m = 0 ; m < Vampires.size() ; m++) {
+            while (test_position == Vampires[m]->get_pos()) test_position = (rand() % (x*y) + 1); //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις   
         }
         for (int k = 0 ; k < i ; k++) {         //Test if pos equals to previous positions
-            while (test_position == Werewolves[k]->get_pos()) test_position = (rand() % (x*y) + 1);
+            while (test_position == Werewolves[k]->get_pos()) test_position = (rand() % (x*y) + 1); //Έλεγχος σύμπτωσης θέσης με τις ήδη ορισμένες θέσεις   
         }
-        Werewolf* w1 = new Werewolf(test_position);
-		Werewolves.push_back(w1);
+        Werewolf* w1 = new Werewolf(test_position); //Δημιουργία pointer σε αντικείμενο Werewolf
+		Werewolves.push_back(w1); //Εισαγωγή του pointer στον vector Werewolves
     }
 }
 
-void BubbleSortObstacles(int obstacles_size, vector<Tree*>& Trees, vector<Lake*>& Lakes) {
+void BubbleSortObstacles(vector<Tree*>& Trees, vector<Lake*>& Lakes) { //Ταξινόμηση BubbleSort των εμποδίων σε άυξουσα σειρά
     Tree* t_tempPos;
     Lake* l_tempPos;
-    for (int i = 0 ; i < obstacles_size ; i++) {            //bubblesort Trees and Lakes vectors in ascending order
-        for (int j = i+1 ; j < obstacles_size ; j++) {      
+    for (int i = 0 ; i < Trees.size() ; i++) {       
+        for (int j = i+1 ; j <Trees.size(); j++) {      
             if (Trees[i]->get_pos() > Trees[j]->get_pos()) {
                 t_tempPos = Trees[i];
                 Trees[i] = Trees[j];
@@ -193,11 +195,11 @@ void BubbleSortObstacles(int obstacles_size, vector<Tree*>& Trees, vector<Lake*>
     }
 }
 
-void BubbleSortEntities(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) {
+void BubbleSortEntities(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) { //Ταξινόμηση BubbleSort των οντοτήτων σε άυξουσα σειρά
     Vampire* v_tempPos;
     Werewolf* w_tempPos;
-    for (int i = 0 ; i < vampires_size ; i++) {                 //bubblesort Vampires vector in ascending order
-        for (int j = i+1 ; j < vampires_size ; j++) {      
+    for (int i = 0 ; i < Vampires.size() ; i++) {           //Ταξινόμηση για τον vector Vampires        
+        for (int j = i+1 ; j < Vampires.size() ; j++) {      
             if (Vampires[i]->get_pos() > Vampires[j]->get_pos()) {
                 v_tempPos = Vampires[i];
                 Vampires[i] = Vampires[j];
@@ -206,8 +208,8 @@ void BubbleSortEntities(int vampires_size, int werewolves_size, vector<Vampire*>
         }
     }
 
-    for (int i = 0 ; i < werewolves_size ; i++) {                 //bubblesort Werewolves vector in ascending order
-        for (int j = i+1 ; j < werewolves_size ; j++) {
+    for (int i = 0 ; i < Werewolves.size() ; i++) {           //Ταξινόμηση για τον vector Werewolves     
+        for (int j = i+1 ; j < Werewolves.size() ; j++) {
             if (Werewolves[i]->get_pos() > Werewolves[j]->get_pos()) {
                     w_tempPos = Werewolves[i];
                     Werewolves[i] = Werewolves[j];
@@ -217,85 +219,89 @@ void BubbleSortEntities(int vampires_size, int werewolves_size, vector<Vampire*>
     }
 }
 
-int AvatarMovement(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a) {
+int AvatarMovement(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a) { //Κίνηση του avatar από τον παίκτη
     int tempPos;
     bool collision = false;
-    if (GetAsyncKeyState('W') || GetAsyncKeyState(VK_UP)) {    //WWW
+    if (GetAsyncKeyState('W') || GetAsyncKeyState(VK_UP)) {     //Κίνηση προς τα πάνω 
             tempPos = a.get_pos() - x;
 
-            for (int t = 0 ; t < vampires_size ; t++) {
-                if ( tempPos == Vampires[t]->get_pos()) collision = true; //if next move does not collide with another object
+            //Έλεγχος σύγκρουσης με εμπόδια ή με οντότητες ή με το border 
+            for (int t = 0 ; t < Vampires.size() ; t++) {
+                if ( tempPos == Vampires[t]->get_pos()) collision = true;   
             }
-             for (int t = 0 ; t < werewolves_size ; t++) {
+             for (int t = 0 ; t < Werewolves.size() ; t++) {
                  if( tempPos == Werewolves[t]->get_pos())collision = true;
              }
-            for (int t = 0 ; t < obstacles_size ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
+            for (int t = 0 ; t < Trees.size() ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
 
-            if (tempPos > 0 && !collision) return tempPos;
+            if (tempPos > 0 && !collision) return tempPos; //Επιστροφή έγκυρης θέσης
     } 
-    else if (GetAsyncKeyState('S') || GetAsyncKeyState(VK_DOWN)) {   //SSS
+    else if (GetAsyncKeyState('S') || GetAsyncKeyState(VK_DOWN)) {   //Κίνηση προς τα κάτω
             tempPos = a.get_pos() + x;
 
-             for (int t = 0 ; t < vampires_size ; t++) {
-                if ( tempPos == Vampires[t]->get_pos()) collision = true; //if next move does not collide with another object
+            //Έλεγχος σύγκρουσης με εμπόδια ή με οντότητες ή με το border
+             for (int t = 0 ; t < Vampires.size() ; t++) {
+                if ( tempPos == Vampires[t]->get_pos()) collision = true; 
             }
-             for (int t = 0 ; t < werewolves_size ; t++) {
+             for (int t = 0 ; t <  Werewolves.size()  ; t++) {
                  if( tempPos == Werewolves[t]->get_pos())collision = true;
              }
-            for (int t = 0 ; t < obstacles_size ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
+            for (int t = 0 ; t < Trees.size() ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
 
-            if (tempPos <= x*y && !collision) return tempPos;
+            if (tempPos <= x*y && !collision) return tempPos; //Επιστροφή έγκυρης θέσης
     } 
-    else if (GetAsyncKeyState('A') || GetAsyncKeyState(VK_LEFT)) {   //AAA
+    else if (GetAsyncKeyState('A') || GetAsyncKeyState(VK_LEFT)) {   //Κίνηση προς τα αριστερά
             tempPos = a.get_pos() - 1;
 
-            for (int t = 0 ; t < vampires_size ; t++) {
-                if ( tempPos == Vampires[t]->get_pos()) collision = true; //if next move does not collide with another object
+            //Έλεγχος σύγκρουσης με εμπόδια ή με οντότητες ή με το border 
+            for (int t = 0 ; t <  Vampires.size() ; t++) {
+                if ( tempPos == Vampires[t]->get_pos()) collision = true; 
             }
-            for (int t = 0 ; t < werewolves_size ; t++) {
+            for (int t = 0 ; t < Werewolves.size() ; t++) {
                  if( tempPos == Werewolves[t]->get_pos())collision = true;
             }     
-            for (int t = 0 ; t < obstacles_size ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
+            for (int t = 0 ; t < Trees.size() ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
 
             for (int i = 1 ; i <= y ; i++) if (tempPos == x*i) collision = true;
 
-            if (tempPos > 0 && !collision) return tempPos;
+            if (tempPos > 0 && !collision) return tempPos; //Επιστροφή έγκυρης θέσης
     }
-    else if (GetAsyncKeyState('D') || GetAsyncKeyState(VK_RIGHT)) {  ///DDD
+    else if (GetAsyncKeyState('D') || GetAsyncKeyState(VK_RIGHT)) {  //Κίνηση προς τα δεξιά
             tempPos = a.get_pos() + 1;
 
-            for (int t = 0 ; t < vampires_size ; t++) {
-                if ( tempPos == Vampires[t]->get_pos()) collision = true; //if next move does not collide with another object
+            //Έλεγχος σύγκρουσης με εμπόδια ή με οντότητες ή με το border
+            for (int t = 0 ; t < Vampires.size() ; t++) {
+                if ( tempPos == Vampires[t]->get_pos()) collision = true; 
             }
-            for (int t = 0 ; t < werewolves_size ; t++) {
+            for (int t = 0 ; t < Werewolves.size() ; t++) {
                  if( tempPos == Werewolves[t]->get_pos())collision = true;
             }
-            for (int t = 0 ; t < obstacles_size ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
+            for (int t = 0 ; t < Trees.size() ; t++) if (tempPos == Trees[t]->get_pos() || tempPos == Lakes[t]->get_pos()) collision = true;
 
             for (int i = 1 ; i <= y ; i++) if (tempPos == x*i+1) collision = true;  
 
-            if (tempPos <= x*y && !collision) return tempPos;
+            if (tempPos <= x*y && !collision) return tempPos; //Επιστροφή έγκυρης θέσης
     } 
-    return a.get_pos();
+    return a.get_pos(); //default τιμή
 }
 
-int getStartingHealth(vector<Vampire*>& Vampires, int vampires_size) {
+int getStartingHealth(vector<Vampire*>& Vampires) { //Υπολογισμός αρχικής υγείας
     int starting_health = 0;
 
-    for (int i = 0 ; i < vampires_size ; i++) {
+    for (int i = 0 ; i < Vampires.size() ; i++) {
         starting_health += Vampires[i]->get_health();
     }
 
     return starting_health;
 }
 
-void PrintTeamHealth(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, int vampires_size, int werewolves_size, int starting_health) {
+void PrintTeamHealth(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, int starting_health) { //Εκτύπωση συνολικής υγείας κάθε ομάδας
     int werewolves_health = 0, vampires_health = 0;
 
-    for (int i = 0 ; i < werewolves_size ; i++) {
+    for (int i = 0 ; i < Werewolves.size() ; i++) {
         werewolves_health += Werewolves[i]->get_health();
     }
-    for (int i = 0 ; i < vampires_size ; i++) {
+    for (int i = 0 ; i <Vampires.size() ; i++) {
         vampires_health += Vampires[i]->get_health();
     }
 
@@ -303,419 +309,411 @@ void PrintTeamHealth(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, 
 
 }
 
-void PrintMap(int obstacles_size, int vampires_size, int werewolves_size,vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+void PrintMap(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) { //Εκτύπωση χάρτη
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //Εντολή χρωμάτων (από την βιβλιοθήκη windows.h)
     
-    for (int i = 0 ; i < x+2 ; i++) cout << '-';  //Upper Border
+    for (int i = 0 ; i < x+2 ; i++) cout << '-';  //Άνω border χάρτη
         cout << endl;
 
-        int la = 0, tr = 0, va = 0, we = 0;
+        int la = 0, tr = 0, va = 0, we = 0; //Αρχικοποίηση των indexes για κάθε στοιχείο
 
         for (int i = 0 ; i < y ; i++) {                       
-            cout << "|";                   //left border   
-            for(int j=0 ; j < x ; j++){
-                if(Vampires[va]->get_pos()==(i*x)+j+1){
-                    SetConsoleTextAttribute(hConsole, 13);
-                    cout << 'V';
-                    SetConsoleTextAttribute(hConsole, 7);
-                    if (va < vampires_size-1) va++;
+            cout << "|";                //Aριστερό border   
+            for(int j=0 ; j < x ; j++){ //Σειριακή εκτύπωση στοιχείων μέσα στο χάρτη ανάλογα με τη θέση
+                if(Vampires[va]->get_pos()==(i*x)+j+1){ 
+                    SetConsoleTextAttribute(hConsole, 13); //Ορισμός μωβ χρώματος (13)
+                    cout << 'V'; //Εκτύπωση V για τα Vampires
+                    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό 
+                    if (va < Vampires.size()-1) va++; //Αύξηση του index κάθε φορά που τυπώνεται
                 }
                 else if(Werewolves[we]->get_pos()==(i*x)+j+1){
-                    SetConsoleTextAttribute(hConsole, 4);
-                    cout << 'W';
-                    SetConsoleTextAttribute(hConsole, 7);
-                    if (we < werewolves_size-1) we++;
+                    SetConsoleTextAttribute(hConsole, 4); //Ορισμός κόκκινου χρώματος (4)
+                    cout << 'W'; //Εκτύπωση W για τα Werewolves
+                    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+                    if (we < Werewolves.size()-1) we++; //Αύξηση του index κάθε φορά που τυπώνεται
                 }
                 else if(Trees[tr]->get_pos()==(i*x)+j+1){
-                    SetConsoleTextAttribute(hConsole, 10); 
-                    cout << 'T';
-                    SetConsoleTextAttribute(hConsole, 7);
-                    if (tr < obstacles_size-1) tr++;    
+                    SetConsoleTextAttribute(hConsole, 10); //Ορισμός πράσινου χρώματος (10)
+                    cout << 'T'; //Εκτύπωση Τ για τα Τrees
+                    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+                    if (tr < Trees.size()-1) tr++; //Αύξηση του index κάθε φορά που τυπώνεται   
                 }
                 else if(Lakes[la]->get_pos()==(i*x)+j+1){
-                    SetConsoleTextAttribute(hConsole, 3);
-                    cout << 'O';
-                    SetConsoleTextAttribute(hConsole, 7);
-                    if (la < obstacles_size-1) la++;
+                    SetConsoleTextAttribute(hConsole, 3); //Ορισμός πράσινου χρώματος (10)
+                    cout << 'O'; //Εκτύπωση O για τα Lakes
+                    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+                    if (la < Lakes.size()-1) la++; //Αύξηση του index κάθε φορά που τυπώνεται
                 }
                 
                 else if (p.get_pos()==(i*x)+j+1) {
-                    cout << '+';
+                    cout << '+'; //Εκτύπωση + για το μαγικό φίλτρο
                 }
                 else if (a.get_pos() == (i*x)+j+1){
-                    cout << 'P';
+                    cout << 'P'; //Εκτύπωση P για τον Avatar
                     continue;
                 }
-                else if (j != x) cout << ' ';
-                       
-                
-                    
+                else if (j != x) cout << ' '; //Εκτύπωση κενού εκτός απο την περίπτωση που τυπωθεί στοιχείο σε δεξιά άκρη του χάρτη     
             }
 
             
-            cout << "|\n";                       //right border
+            cout << "|\n";                       //Δεξί border
         }
 
-        for (int i = 0 ; i < x+2 ; i++) cout << '-';   //Lower Border      
+        for (int i = 0 ; i < x+2 ; i++) cout << '-';   //Κάτω Border      
         cout << endl;
 }
 
-void moveWerewolves(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) {
+void moveWerewolves(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) { //Τυχαία κίνηση των Werewolves
     int move_optionW, tempPos; 
     bool collision = false;
 
-    for (int i = 0 ; i < werewolves_size ; i++) {
-        move_optionW = (rand() % 5);
+    for (int i = 0 ; i < Werewolves.size() ; i++) { 
+        move_optionW = (rand() % 5); //Επιλογή κίνησης τυχαία (Aκινησία, Πάνω, Κάτω, Αριστερά, Δεξιά)
             
-        switch (move_optionW) {  //Moves for Werewolves
-            case 0:  //STAY
+        switch (move_optionW) {
+            case 0:  //Ακινησία
                 break;
-            case 1:  //UP
+            case 1:  //Κίνηση προς τα πάνω
                 collision = false;
                 tempPos = Werewolves[i]->get_pos() - x;
 
-                for (int j = 0 ; j < werewolves_size ; j++) {
-                if (tempPos == Werewolves[j]->get_pos()) //if next move does not collide with another object
-                    if (Werewolves[i] != Werewolves[j]) collision = true; //don't test collision with self
+                //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                for (int j = 0 ; j <Werewolves.size() ; j++) {
+                    if (tempPos == Werewolves[j]->get_pos()) 
+                        if (Werewolves[i] != Werewolves[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                 }
-                for (int j = 0 ; j < vampires_size ; j++){
+                for (int j = 0 ; j < Vampires.size() ; j++){
                     if(tempPos == Vampires[j]->get_pos())collision = true;
                 }
-                for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                for (int j = 0 ; j < Lakes.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
-                if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos);
+                if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                 break;
-            case 2:  //DOWN
+            case 2:  //Κίνηση προς τα κάτω
                 collision = false;
                 tempPos = Werewolves[i]->get_pos() + x;
 
-                for (int j = 0 ; j < werewolves_size ; j++) {
-                if (tempPos == Werewolves[j]->get_pos()) //if next move does not collide with another object
-                    if (Werewolves[i] != Werewolves[j]) collision = true; //don't test collision with self
+                //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                for (int j = 0 ; j < Werewolves.size() ; j++) {
+                    if (tempPos == Werewolves[j]->get_pos())
+                        if (Werewolves[i] != Werewolves[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                 }
-                for (int j = 0 ; j < vampires_size ; j++){
+                for (int j = 0 ; j < Vampires.size() ; j++){
                     if(tempPos == Vampires[j]->get_pos())collision = true;
                 }
-                for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
-                if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos);
+                if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                 break;
-            case 3:  //LEFT
+            case 3:  //Κίνηση προς τα αριστερά
                 tempPos = Werewolves[i]->get_pos() - 1;
 
-                for (int j = 0 ; j < werewolves_size ; j++) {
-                if (tempPos == Werewolves[j]->get_pos()) //if next move does not collide with another object
-                    if (Werewolves[i] != Werewolves[j]) collision = true; //don't test collision with self
+                for (int j = 0 ; j < Werewolves.size() ; j++) {
+                    if (tempPos == Werewolves[j]->get_pos())
+                        if (Werewolves[i] != Werewolves[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                 }
-                for (int j = 0 ; j < vampires_size ; j++){
+                for (int j = 0 ; j < Vampires.size() ; j++){
                     if(tempPos == Vampires[j]->get_pos())collision = true;
                 }
-                for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                 for (int j = 1 ; j <= y ; j++) if (tempPos == x*j) collision = true;  
 
-                if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos);
+                if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                 break;
-            case 4: //RIGHT
+            case 4: //Κίνηση προς τα δεξιά 
                 tempPos = Werewolves[i]->get_pos() + 1;
 
-                for (int j = 0 ; j < werewolves_size ; j++) {
-                if (tempPos == Werewolves[j]->get_pos()) //if next move does not collide with another object
-                    if (Werewolves[i] != Werewolves[j]) collision = true; //don't test collision with self
+                for (int j = 0 ; j < Werewolves.size() ; j++) {
+                    if (tempPos == Werewolves[j]->get_pos()) 
+                        if (Werewolves[i] != Werewolves[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                 }
-                for (int j = 0 ; j < vampires_size ; j++){
+                for (int j = 0 ; j < Vampires.size() ; j++){
                     if(tempPos == Vampires[j]->get_pos())collision = true;
                 }
-                for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                 for (int j = 1 ; j <= y ; j++) if (tempPos == x*j+1) collision = true;  
 
-                if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos);
+                if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Werewolves[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                 break;
         }
     }
 }
 
 
-void moveVampires(int obstacles_size, int vampires_size, int werewolves_size, vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) {
+void moveVampires(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) { //Τυχαία κίνηση των Vampires
     int move_optionV, tempPos; 
     bool collision = false; 
 
-    for (int i = 0 ; i < vampires_size ; i++) {
-            move_optionV = (rand() % 9);
-            switch (move_optionV) {  //Moves for Vampires
-                case 0:  //STAY
+    for (int i = 0 ; i < Vampires.size() ; i++) {
+            move_optionV = (rand() % 9); //Επιλογή κίνησης τυχαία (Ακινησία, Πάνω, Κάτω, Αριστερά, Δεξιά, Πάνω αριστερα, Πάνω δεξιά, Κάτω αριστερά, Κάτω δεξιά)
+            switch (move_optionV) {  
+                case 0:  //Ακινησία
                     break;
-                case 1:  //UP -=x
+                case 1:  //Κίνηση προς τα πάνω
                     tempPos = Vampires[i]->get_pos() - x;
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
-                    if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
-                case 2:  //DOWN += x
+                case 2:  //Κίνηση προς τα κάτω
                     tempPos = Vampires[i]->get_pos() + x;
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
-                    if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
-                case 3:  //LEFT -= 1
+                case 3:  //Κίνηση προς τα αριστερά
                     tempPos = Vampires[i]->get_pos() - 1;
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                     for (int j = 1 ; j <= y ; j++) if (tempPos == x*j) collision = true;  
 
-                    if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos > 0 && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
-                case 4: //RIGHT += 1
+                case 4: //Κίνηση προς τα δεξιά
                     tempPos = Vampires[i]->get_pos() + 1;
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                     for (int j = 1 ; j <= y ; j++) if (tempPos == x*j+1) collision = true;  
 
-                    if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
-                case 5: //UP_LEFT -= (x+1)
+                case 5: //Κίνηση προς τα πάνω αριστερά
                     tempPos = Vampires[i]->get_pos() - (x+1);
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                     for (int j = 1 ; j <= y ; j++) if (tempPos == x*j) collision = true;  
 
-                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
-                case 6: //UP_RIGHT -= (x-1)
+                case 6: //Κίνηση προς τα πάνω δεξιά
                     tempPos = Vampires[i]->get_pos() - (x-1);
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                     for (int j = 1 ; j <= y ; j++) if (tempPos == x*j+1) collision = true; 
 
-                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
-                case 7: //DOWN_LEFT += (x-1)
+                case 7: //Κίνηση προς τα κάτω αριστερά
                     tempPos = Vampires[i]->get_pos() + (x-1);
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true;  //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                     for (int j = 1 ; j <= y ; j++) if (tempPos == x*j) collision = true;  
 
-                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
-                case 8: //DOWN_RIGHT += (x+1)
+                case 8: //Κίνηση προς τα κάτω δεξιά
                     tempPos = Vampires[i]->get_pos() + (x+1);
 
-                    for (int j = 0 ; j < vampires_size ; j++) {
-                    if ( tempPos == Vampires[j]->get_pos()) //if next move does not collide with another object
-                        if (Vampires[i] != Vampires[j]) collision = true; //don't test collision with self
+                    //Έλεγχος σύγκρουσης με εμπόδια ή με άλλες οντότητες ή με το border
+                    for (int j = 0 ; j < Vampires.size() ; j++) {
+                    if ( tempPos == Vampires[j]->get_pos()) 
+                        if (Vampires[i] != Vampires[j]) collision = true; //παράλειψη ελέγχου με τον εαυτό του
                     }
-                    for (int j = 0 ; j < werewolves_size ; j++) {
+                    for (int j = 0 ; j < Werewolves.size() ; j++) {
                         if(tempPos == Werewolves[j]->get_pos())collision = true;
                     }
-                    for (int j = 0 ; j < obstacles_size ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
+                    for (int j = 0 ; j < Trees.size() ; j++) if (tempPos == Trees[j]->get_pos() || tempPos == Lakes[j]->get_pos()) collision = true;
 
                     for (int j = 1 ; j <= y ; j++) if (tempPos == x*j+1) collision = true; 
 
-                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos);
+                    if (tempPos > 0 && tempPos <= x*y && !collision && tempPos != p.get_pos() && tempPos != a.get_pos()) Vampires[i]->set_pos(tempPos); //Ορισμός έγκυρης θέσης
                     break;
             } 
         }
 }
 
-void vamps_attack(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves ){
-     for (int i = 0 ; i < vampires_size ; i++){  //Vampires Attack
+void vamps_attack( vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves ){ //Επίθεση των Vampires σε εχθρούς διπλανών θέσεων 
+     for (int i = 0 ; i < Vampires.size() ; i++){  
         int battle_pos = Vampires[i]->get_pos();
-        for (int j = 0 ; j < werewolves_size ; j++){
+        for (int j = 0 ; j < Werewolves.size() ; j++){
             if(battle_pos == Werewolves[j]->get_pos()-x || battle_pos == Werewolves[j]->get_pos()+x || battle_pos == Werewolves[j]->get_pos()-1 || battle_pos == Werewolves[j]->get_pos()+1){
                 if(Vampires[i]->get_strength() >= Werewolves[j]->get_strength() && Vampires[i]->get_strength() >= Werewolves[j]->get_defense()){
-                    Vampires[i]->attackW(Werewolves[j]);
+                    Vampires[i]->attackW(Werewolves[j]); //Αν το Vampire έχει μεγαλύτερη δύναμη από το Werewolf και μεγαλύτερη δύναμη από την άμυνα του Werewolf κάνε επίθεση
                 }
-                // Werewolf* w=Werewolves[j];
-                // if (w->get_health() <= 0) {
-                //     delete w;
-                //     w=NULL;
-                //     werewolves_size--;
-                // }
+                if (Werewolves[j]->get_health() <= 0) { //Αν το Werewolf έχει υγεία μικρότερη ή ίση με το μηδέν 
+                    delete Werewolves[j]; //Διαγραφή του αντικειμένου
+                    Werewolves.erase(Werewolves.begin()+j); //Διαγραφή του pointer από τον vector
+                } 
             }
         }
     }
 }
 
-void vamps_heal(int vampires_size, vector<Vampire*>& Vampires) {
-   for (int i = 0 ; i < vampires_size ; i++){   //Vampires Heal
+void vamps_heal(vector<Vampire*>& Vampires) { //Επούλωση υγείας μεταξύ των Vampires
+   for (int i = 0 ; i < Vampires.size() ; i++){ 
         int assist_pos = Vampires[i]->get_pos();
         bool choice;
-        for (int j = 0 ; j < vampires_size ; j++){
-            choice = (rand() % 2);
-            if(assist_pos == Vampires[j]->get_pos()-x || assist_pos == Vampires[j]->get_pos()+x || assist_pos == Vampires[j]->get_pos()-1 || assist_pos == Vampires[j]->get_pos()+1){
-                if(Vampires[i]->get_health() > Vampires[j]->get_health() && Vampires[i]->get_healing()>0 && choice){
-                    Vampires[j]->set_health((Vampires[j]->get_health())+1);
-                    Vampires[i]->set_healing((Vampires[i]->get_healing())-1);
+        for (int j = 0 ; j < Vampires.size() ; j++){
+            choice = (rand() % 2); //Πιθανότητα 50% να πραγματοποιηθεί επούλωση
+            if(assist_pos == Vampires[j]->get_pos()-x || assist_pos == Vampires[j]->get_pos()+x || assist_pos == Vampires[j]->get_pos()-1 || assist_pos == Vampires[j]->get_pos()+1){ //Αν υπάρχει Vampire σε διπλανή θέση
+                if(Vampires[i]->get_health() > Vampires[j]->get_health() && Vampires[i]->get_healing()>0 && choice){ //Το Vampire με την περισσότερη υγεία κάνει την επούλωση στο άλλο αν έχει γιατρικό
+                    Vampires[j]->set_health((Vampires[j]->get_health())+1); //Αύξηση της υγείας του Vampire που δέχεται επούλωση
+                    Vampires[i]->set_healing((Vampires[i]->get_healing())-1); //Μείωση του γιατρικού του Vampire που προσφέρει την επούλωση
                 }
             }
         }
     } 
 }
 
-void weres_attack(int vampires_size, int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves ){
-     for (int i = 0 ; i < werewolves_size ; i++){  //Vampires Attack
+void weres_attack(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves ){ //Επίθεση των Werewolves σε εχθρούς διπλανών θέσεων 
+     for (int i = 0 ; i < Werewolves.size() ; i++){  
         int battle_pos = Werewolves[i]->get_pos();
-        for (int j = 0 ; j < vampires_size ; j++){
+        for (int j = 0 ; j < Vampires.size() ; j++){
             if(battle_pos == Vampires[j]->get_pos()-x || battle_pos == Vampires[j]->get_pos()+x || battle_pos == Vampires[j]->get_pos()-1 || battle_pos == Vampires[j]->get_pos()+1){
                 if(Werewolves[i]->get_strength() >= Vampires[j]->get_strength() && Werewolves[i]->get_strength() >= Vampires[j]->get_defense()){
-                    Werewolves[i]->attackV(Vampires[j]);
+                    Werewolves[i]->attackV(Vampires[j]); //Αν το Werewolf έχει μεγαλύτερη δύναμη από το Vampire και μεγαλύτερη δύναμη από την άμυνα του Vampire κάνε επίθεση
                 }
-                // Vampire* v = Vampires[j];
-                // if (v->get_health()<=0) {
-                //     delete v;
-                //     v=NULL;
-                //     vampires_size--;
-                // }
+                if (Vampires[j]->get_health() <= 0) { //Αν το Werewolf έχει υγεία μικρότερη ή ίση με το μηδέν 
+                    delete Vampires[j]; //Διαγραφή του αντικειμένου
+                    Vampires.erase(Vampires.begin()+j); //Διαγραφή του pointer από τον vector
+                }  
             }
         }
     }
 }
 
-void weres_heal(int werewolves_size, vector<Werewolf*>& Werewolves) {
-    for (int i = 0 ; i < werewolves_size ; i++){   
+void weres_heal(vector<Werewolf*>& Werewolves) { //Επούλωση υγείας μεταξύ των Werewolves
+    for (int i = 0 ; i < Werewolves.size() ; i++){   
         int assist_pos = Werewolves[i]->get_pos();
         bool choice;
-        for (int j = 0 ; j < werewolves_size ; j++){
-            choice = (rand() % 2);
-            if(assist_pos == Werewolves[j]->get_pos()-x || assist_pos == Werewolves[j]->get_pos()+x || assist_pos == Werewolves[j]->get_pos()-1 || assist_pos == Werewolves[j]->get_pos()+1){
-                if(Werewolves[i]->get_health() > Werewolves[j]->get_health() && Werewolves[i]->get_healing()>0 && choice){
-                    Werewolves[j]->set_health((Werewolves[j]->get_health())+1);
-                    Werewolves[i]->set_healing((Werewolves[i]->get_healing())-1);
+        for (int j = 0 ; j < Werewolves.size() ; j++){
+            choice = (rand() % 2); //Πιθανότητα 50% να πραγματοποιηθεί επούλωση
+            if(assist_pos == Werewolves[j]->get_pos()-x || assist_pos == Werewolves[j]->get_pos()+x || assist_pos == Werewolves[j]->get_pos()-1 || assist_pos == Werewolves[j]->get_pos()+1){  //Αν υπάρχει Werewolf σε διπλανή θέση
+                if(Werewolves[i]->get_health() > Werewolves[j]->get_health() && Werewolves[i]->get_healing()>0 && choice){ //Το Werewolf με την περισσότερη υγεία κάνει την επούλωση στο άλλο αν έχει γιατρικό
+                    Werewolves[j]->set_health((Werewolves[j]->get_health())+1); //Αύξηση της υγείας του Vampire που δέχεται επούλωση
+                    Werewolves[i]->set_healing((Werewolves[i]->get_healing())-1); //Μείωση του γιατρικού του Vampire που προσφέρει την επούλωση
                 }
             }
         }
     } 
 }
 
-int check_healthV(int vampires_size, vector<Vampire*>& Vampires) {
-    for (int i = 0 ; i < vampires_size ; i++) {
-        Vampire* v= Vampires[i];
-        if (v->get_health()<=0) {
-            delete v;
-            v=NULL;
-            vampires_size--;
-        }
-    }
-    return vampires_size;
-}
-
-int check_healthW(int werewolves_size, vector<Werewolf*>& Werewolves){
-    for (int i = 0 ; i < werewolves_size ; i++) {
-        Werewolf* w=Werewolves[i];
-        if (w->get_health() <= 0) {
-            delete w;
-            w=NULL;
-            werewolves_size--;
-        }
-    }
-    return werewolves_size;
-}
-
-void heal(Avatar a, char p_support,bool Day, int vampires_size,int werewolves_size, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves){
+int heal(Avatar a, char p_support,bool Day, vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves){ //Γέμισμα υγείας της υποστηριζόμενης ομάδας από τον παίχτη με το κουμπί [Η]
      if(GetAsyncKeyState('H')){
-        if(a.get_pot()>0){
+        if(a.get_pot()>0){ //Έλεγχος ύπαρξης διαθέσιμων μαγικών φίλτρων του παίχτη
             a.heal();
-            if(p_support == 'V' && Day){
-                for(int i = 0; i < vampires_size ; i++) Vampires[i]->heal();
+            if(p_support == 'V' && Day){ //Για γέμισμα υγείας Vampires συνθήκη μέρας
+                for(int i = 0; i < Vampires.size() ; i++) Vampires[i]->heal();
             }
-            else if(p_support == 'W' && !Day){
-                for(int i = 0; i < werewolves_size ; i++) Werewolves[i]->heal();
+            else if(p_support == 'W' && !Day){ //Για γέμισμα υγείας Werewolves συνθήκη νύχτα
+                for(int i = 0; i < Werewolves.size() ; i++) Werewolves[i]->heal();
             }
         }
-
+        return a.get_pot(); //Επιστροφή ανανεωμένης ποσότητας μαγικού φίλτρου του παίχτη
     }
+    return a.get_pot(); //Default Τιμή
 }
 
-void pause_function(int vampires_size, int werewolves_size, Avatar a) {
+void pause_function(Avatar a,  vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) { //Παύση του προγράμματος με το κουμπί [P]
     if (GetKeyState('P')) {                     
-        system("cls");
-        cout << "[Alive Vampires  : " <<  vampires_size << ']' << endl;
-        cout << "[Alive Werewolfs : " << werewolves_size << ']' << endl;
-        cout << "[Avatar potions  : " << a.get_pot() << endl;
-        system("pause");
+        system("cls"); //Καθάρισμα οθόνης
+        cout << "[Alive Vampires  : " <<  Vampires.size() << ']' << endl; //Εκτύπωση ζωντανών Vampires
+        cout << "[Alive Werewolfs : " << Werewolves.size() << ']' << endl; //Εκτύπωση ζωντανών Werewolves
+        cout << "[Avatar potions  : " << a.get_pot() << ']' << endl; //Εκτύπωση μαγικών φίλτρων στη κατοχή του παίκτη
+        system("pause"); //Παύση προγράμματος
     }
 }
 
-bool ChangeDay(int counter, bool Day) {
-    if (counter % 10 == 0) Day = !Day;
+bool ChangeDay(int counter, bool Day) { //Αλλαγή μέρας ανάλογα τον μετρητή των frames
+    if (counter % 15 == 0) Day = !Day; //Αλλαγή μέρας ανά 15 frames
 
     return Day;
 }
 
-void EndScreen(int werewolves_size) {
-    for (int i = 0 ; i < 60 ; i++) cout << '\4';        //End screen
+void EndScreen(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) { //Εκτύπωση αποτελέσματος του παιχνιδιού
+    if(Werewolves.size()>0 && Vampires.size()>0){ //Εκτύπωση μηνύματος σε περίπτωση τερματισμού του παιχνιδιού από τον παίκτη
+        cout<<"You exited the game!";
+    }
+    else{
+        for (int i = 0 ; i < 60 ; i++) cout << '\4';       
 
-    cout << endl << '\4';
-    for (int i = 0 ; i < 58 ; i++) cout << ' '; 
-    cout << '\4' << endl;
+        cout << endl << '\4';
+        for (int i = 0 ; i < 58 ; i++) cout << ' '; 
+        cout << '\4' << endl;
 
-    cout << '\4';
-    for (int i = 0 ; i < 22 ; i++) cout << ' ';  
-    if(werewolves_size > 0)cout << "Werewolves win!";
-    else cout<<"Vampires win!";
-    if(werewolves_size > 0) for (int i = 0 ; i < 21 ; i++) cout << ' ';
-    else for (int i = 0 ; i < 23 ; i++) cout << ' ';
-    cout << '\4' << endl;
-    cout << '\4';
-    for (int i = 0 ; i < 58 ; i++) cout << ' '; 
-    cout << '\4' << endl;
-    for (int i = 0 ; i < 60 ; i++) cout << '\4'; 
-    cout << "\n\n"; 
+        cout << '\4';
+        for (int i = 0 ; i < 22 ; i++) cout << ' ';  
+        if(Werewolves.size() > Vampires.size())cout << "Werewolves win!"; //Μήνυμα για νίκη Werewolves
+        else cout<<"Vampires win!"; //Μήνυμα για νίκη Vampires
+        if(Werewolves.size() > 0) for (int i = 0 ; i < 21 ; i++) cout << ' ';
+        else for (int i = 0 ; i < 23 ; i++) cout << ' ';
+        cout << '\4' << endl;
+        cout << '\4';
+        for (int i = 0 ; i < 58 ; i++) cout << ' '; 
+        cout << '\4' << endl;
+        for (int i = 0 ; i < 60 ; i++) cout << '\4'; 
+        cout << "\n\n";
+    }
+}
+
+void ClearVectors(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) { //Αποδέσμευση μνήμης όλων των vectors και των αντικειμένων που περιλαμβάνουν
+    Trees.clear();
+    Lakes.clear();
+    Vampires.clear();
+    Werewolves.clear();
 }
