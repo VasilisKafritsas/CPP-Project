@@ -9,7 +9,8 @@ char player_support; //Μεταβλητή για το ποια ομάδα υπο
 HANDLE hConsole;
 
 void printTitleScreen() { //Εκτύπωση Τίτλου Παιχιδιού
-	
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //Εντολή χρωμάτων (από την βιβλιοθήκη windows.h)
+
     for (int i = 0; i < 61; i++) cout << '\4';  // '\4'= ρόμβος      
 
     cout << endl << '\4';
@@ -18,8 +19,16 @@ void printTitleScreen() { //Εκτύπωση Τίτλου Παιχιδιού
 
     cout << '\4';
     for (int i = 0; i < 13; i++) cout << ' ';
-    cout << "Welcome to Vampires VS Werewolfs!";
-    for (int i = 0; i < 13; i++) cout << ' ';
+    cout << "Welcome to ";
+    SetConsoleTextAttribute(hConsole, 13); //Ορισμός μωβ χρώματος (13)
+    cout << "Vampires";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << " VS ";
+    SetConsoleTextAttribute(hConsole, 4); //Ορισμός κόκκινου χρώματος (4)
+    cout << "Werewolves";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << "!";
+    for (int i = 0; i < 12; i++) cout << ' ';
     cout << '\4' << endl;
 
     cout << '\4';
@@ -44,34 +53,72 @@ void request_dimensions() {  ////Εισαγωγή διαστάσεων
 
 
 void printInstructions() { //Εκτύπωση οδηγιών με πάυσεις
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //Εντολή χρωμάτων (από την βιβλιοθήκη windows.h)
+
+    SetConsoleTextAttribute(hConsole, 14); //Ορισμός κίτρινου χρώματος (14)
     cout << "\n*INSTRUCTIONS*\n";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
     this_thread::sleep_for(500ms);
 
-    cout << "There are 2 teams, Werewolfs and Vampires.You must choose a team to support but you are not part of it.\n\n";
+
+    cout << "There are 2 teams: ";
+    SetConsoleTextAttribute(hConsole, 13); //Ορισμός μωβ χρώματος (13)
+    cout << "Vampires";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << " and";
+    SetConsoleTextAttribute(hConsole, 4); //Ορισμός κόκκινου χρώματος (4)
+    cout << " Werewolves";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << ".You must choose a team to support but you can't fight.\n\n";
     this_thread::sleep_for(500ms);
 
-    cout << "You control your avatar with [WASD] keys.\n";
+
+    cout << "You control your avatar with "; 
+    SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+    cout << "[WASD] or [UP DOWN LEFT RIGHT]";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << " keys.\n";
     cout << "Your avatar does not take damage.\n\n";
     this_thread::sleep_for(500ms);
+
 
     cout << "Each team moves randomly around the map in all 4 directions but Vampires can move diagonally too.\n";
     cout << "When 2 enemies collide they fight or try to run away. (Fights cannot happen diagonally)\n";
     cout << "When 2 allies collide and one of them does not have full health it may receive a healing effect from the other.\n\n";
     this_thread::sleep_for(500ms);
 
-    cout << "You can heal[H] your team once only at the right time of day.(Day for Vampires, Night for Werewolfs)\n";
+
+    cout << "You can heal";
+    SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+    cout << "[H]";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << " your team once only at the right time of day.(Day for Vampires, Night for Werewolfs)\n";
     cout << "You can heal your team one more time if you collect the healing  that spawns around the map.\n\n";
     this_thread::sleep_for(500ms);
+
 
     cout << "Your goal is to keep your team alive till the end of the game.\n";
     cout << "The game ends when a team has 0 alive members.\n\n";
     this_thread::sleep_for(500ms);
 
-    cout << "You can force stop the game with [SPACEBAR] or pause/resume with [P] to view alive members of each team and how many healing s you have.\n\n";
+
+    cout << "You can force stop the game with ";
+    SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+    cout << "[SPACEBAR]";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << " or pause/resume with ";
+    SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+    cout << "[P]";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << " to view alive members of each team and how many healings you have.\n\n";
     this_thread::sleep_for(500ms);
 
+
+    SetConsoleTextAttribute(hConsole, 14); //Ορισμός κίτρινου χρώματος (14)
     cout << "Good Luck!\n";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
     this_thread::sleep_for(500ms);
+
 
     system("pause"); //Αναμονή εκκίνησης παιχνιδιού από τον παίκτη
 
@@ -80,7 +127,16 @@ void printInstructions() { //Εκτύπωση οδηγιών με πάυσεις
 
 
 char request_side() { //Επιλογή ομάδας παίκτη 
-    cout << endl << "Choose a side (V for Vampires or W for Werewolfs): ";
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //Εντολή χρωμάτων (από την βιβλιοθήκη windows.h)
+    cout << endl << "Choose a side (V for ";
+    SetConsoleTextAttribute(hConsole, 13); //Ορισμός μωβ χρώματος (13)
+    cout << "Vampires";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << " or W for ";
+    SetConsoleTextAttribute(hConsole, 4); //Ορισμός κόκκινου χρώματος (4)
+    cout << "Werewolfs";
+    SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+    cout << "): ";
     cin >> player_support;
     if (player_support == 'V' || player_support == 'v')  { //v ή V για Vampires
         player_support = 'V';
@@ -339,7 +395,7 @@ void PrintMap(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampi
                     if (tr < Trees.size()-1) tr++; //Αύξηση του index κάθε φορά που τυπώνεται   
                 }
                 else if(Lakes[la]->get_pos()==(i*x)+j+1){
-                    SetConsoleTextAttribute(hConsole, 3); //Ορισμός πράσινου χρώματος (10)
+                    SetConsoleTextAttribute(hConsole, 3); //Ορισμός μπλε χρώματος (10)
                     cout << 'O'; //Εκτύπωση O για τα Lakes
                     SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
                     if (la < Lakes.size()-1) la++; //Αύξηση του index κάθε φορά που τυπώνεται
@@ -360,7 +416,16 @@ void PrintMap(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampi
         }
 
         for (int i = 0 ; i < x+2 ; i++) cout << '-';   //Κάτω Border      
-        cout << endl;
+        cout << "\n\n";
+
+        cout << "Force stop the game with ";
+        SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+        cout << "[SPACEBAR]";
+        SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+        cout << " or pause/resume with ";
+        SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+        cout << "[P]";
+        SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
 }
 
 void moveWerewolves(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves, Avatar a, Potion p) { //Τυχαία κίνηση των Werewolves
@@ -645,8 +710,8 @@ void weres_heal(vector<Werewolf*>& Werewolves) { //Επούλωση υγείας
             choice = (rand() % 2); //Πιθανότητα 50% να πραγματοποιηθεί επούλωση
             if(assist_pos == Werewolves[j]->get_pos()-x || assist_pos == Werewolves[j]->get_pos()+x || assist_pos == Werewolves[j]->get_pos()-1 || assist_pos == Werewolves[j]->get_pos()+1){  //Αν υπάρχει Werewolf σε διπλανή θέση
                 if(Werewolves[i]->get_health() > Werewolves[j]->get_health() && Werewolves[i]->get_healing()>0 && choice){ //Το Werewolf με την περισσότερη υγεία κάνει την επούλωση στο άλλο αν έχει γιατρικό
-                    Werewolves[j]->set_health((Werewolves[j]->get_health())+1); //Αύξηση της υγείας του Vampire που δέχεται επούλωση
-                    Werewolves[i]->set_healing((Werewolves[i]->get_healing())-1); //Μείωση του γιατρικού του Vampire που προσφέρει την επούλωση
+                    Werewolves[j]->set_health((Werewolves[j]->get_health())+1); //Αύξηση της υγείας τοu Werewolf που δέχεται επούλωση
+                    Werewolves[i]->set_healing((Werewolves[i]->get_healing())-1); //Μείωση του γιατρικού του Werewolf που προσφέρει την επούλωση
                 }
             }
         }
@@ -670,11 +735,22 @@ int heal(Avatar a, char p_support,bool Day, vector<Vampire*>& Vampires, vector<W
 }
 
 void pause_function(Avatar a,  vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) { //Παύση του προγράμματος με το κουμπί [P]
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //Εντολή χρωμάτων (από την βιβλιοθήκη windows.h)
     if (GetKeyState('P')) {                     
         system("cls"); //Καθάρισμα οθόνης
         cout << "[Alive Vampires  : " <<  Vampires.size() << ']' << endl; //Εκτύπωση ζωντανών Vampires
         cout << "[Alive Werewolfs : " << Werewolves.size() << ']' << endl; //Εκτύπωση ζωντανών Werewolves
-        cout << "[Avatar potions  : " << a.get_pot() << ']' << endl; //Εκτύπωση μαγικών φίλτρων στη κατοχή του παίκτη
+        cout << "[Avatar potions  : " << a.get_pot() << ']' << "\n\n"; //Εκτύπωση μαγικών φίλτρων στη κατοχή του παίκτη
+
+        cout << "Force stop the game with ";
+        SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+        cout << "[SPACEBAR]";
+        SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+        cout << " or pause/resume with ";
+        SetConsoleTextAttribute(hConsole, 2); //Ορισμός πράσινου χρώματος (2)
+        cout << "[P]\n\n";
+        SetConsoleTextAttribute(hConsole, 7); //Επαναφορά χρώματος στο λευκό
+
         system("pause"); //Παύση προγράμματος
     }
 }
@@ -709,6 +785,7 @@ void EndScreen(vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) { //Ε
         for (int i = 0 ; i < 60 ; i++) cout << '\4'; 
         cout << "\n\n";
     }
+
 }
 
 void ClearVectors(vector<Tree*>& Trees, vector<Lake*>& Lakes,vector<Vampire*>& Vampires, vector<Werewolf*>& Werewolves) { //Αποδέσμευση μνήμης όλων των vectors και των αντικειμένων που περιλαμβάνουν

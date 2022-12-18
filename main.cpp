@@ -64,7 +64,7 @@ int main() {
 
         PrintMap(Trees,Lakes,Vampires,Werewolves,a1,p1);  //Εκτύπωση χάρτη
 
-        this_thread::sleep_for(450ms);  //Παύση προγράμματος για 450ms
+        this_thread::sleep_for(300ms);  //Παύση προγράμματος για 300ms
         system("cls");  //Καθάρισμα οθόνης
 
 

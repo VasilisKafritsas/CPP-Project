@@ -26,7 +26,7 @@ void Vampire :: set_healing(int healing) {this->healing = healing;} //Μutator �
 void Vampire :: heal(){set_health(5);} //Επούλωση 
 
 void Vampire :: attackW(Werewolf* w){ //Επίθεση του Vampire σε Werewolf
-     w->set_health(w->get_health() - strength + w->get_defense()); // Nέα υγεία Werewolf = παλιά υγεία Werewolf- δύναμη Vampire + άμυνα Werewolf
+     w->set_health(w->get_health() - strength + w->get_defense()); // Nέα υγεία Werewolf = παλιά υγεία Werewolf - δύναμη Vampire + άμυνα Werewolf
 }
 
 
